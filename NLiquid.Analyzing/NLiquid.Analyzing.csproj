@@ -1,0 +1,99 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{0C58B7FB-A9D1-42DE-A740-3A0416054F90}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>NLiquid.Analyzing</RootNamespace>
+    <AssemblyName>NLiquid.Analyzing</AssemblyName>
+    <FileAlignment>512</FileAlignment>
+    <SccProjectName>
+    </SccProjectName>
+    <SccLocalPath>
+    </SccLocalPath>
+    <SccAuxPath>
+    </SccAuxPath>
+    <SccProvider>
+    </SccProvider>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>True</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>False</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <CodeAnalysisRuleSet>GlobalizationRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>True</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="QUT.ShiftReduceParser">
+      <HintPath>QUT.ShiftReduceParser.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Lex Include="NLiquidScaner.lex" />
+    <Compile Include="NLiquidScaner.cs">
+      <DependentUpon>NLiquidScaner.lex</DependentUpon>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Yacc Include="NLiquidParser.y" />
+    <Compile Include="NLiquidParser.cs">
+      <DependentUpon>NLiquidParser.y</DependentUpon>
+    </Compile>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <!--<CompileDependsOn>GenerateLexer;$(CompileDependsOn)</CompileDependsOn>-->
+    <CoreCompileDependsOn>GenerateLexer;$(CoreCompileDependsOn)</CoreCompileDependsOn>
+    <CoreCompileDependsOn>GenerateParser;$(CoreCompileDependsOn)</CoreCompileDependsOn>
+    <UseHostCompilerIfAvailable>false</UseHostCompilerIfAvailable>
+  </PropertyGroup>
+  <Target Name="GenerateLexer" Inputs="@(Lex)" Outputs="@(Lex-&gt;'%(Filename).cs')">
+    <Exec Command="gplex.exe /stack /out:@(Lex -&gt;'%(Filename).cs') %(Lex.Identity)" />
+    <!--<CreateItem Include="%(Lex.Filename).cs">
+	<Output TaskParameter="Include" ItemName="Compile" />
+</CreateItem>-->
+    <CreateItem Include="%(Lex.Filename).cs">
+      <Output TaskParameter="Include" ItemName="FileWrites" />
+    </CreateItem>
+  </Target>
+  <Target Name="GenerateParser" Inputs="@(Yacc)" Outputs="@(Yacc-&gt;'%(Filename).cs')">
+    <Exec Command="gppg.exe /gplex /nolines /verbose %(Yacc.Identity) &gt; @(Yacc -&gt;'%(Filename).cs')" />
+    <!--<CreateItem Include="%(Lex.Filename).cs">
+	<Output TaskParameter="Include" ItemName="Compile" />
+</CreateItem>-->
+    <CreateItem Include="%(Yacc.Filename).cs">
+      <Output TaskParameter="Include" ItemName="FileWrites" />
+    </CreateItem>
+  </Target>
+  <ItemGroup>
+    <ProjectReference Include="..\NLiquid.RunTime\NLiquid.RunTime.csproj">
+      <Project>{6CEFB39D-375E-45B8-8EED-C24976708CC9}</Project>
+      <Name>NLiquid.RunTime</Name>
+    </ProjectReference>
+  </ItemGroup>
+</Project>

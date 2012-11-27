@@ -1,0 +1,9 @@
+*.class
+*.iml
+.idea/
+target/
+bin/
+obj/
+_ReSharper.*/
+*.user
+*.suo
